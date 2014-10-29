@@ -1,0 +1,25 @@
+name "adap_samples_input"
+
+# version "0.1"
+
+
+import_types_from "base"
+
+using_library "adap_samples_input"
+
+
+task_context "Task" do
+    
+
+     input_port('position_samples', '/base/samples/LaserScan').
+        doc("current position given by sonar_feature_estimator")
+
+    
+    output_port('velocity', '/base/samples/RigidBodyState').
+        doc("velocity after filter and derivated the position_samples")
+
+    
+    port_driven "position_samples"
+    
+end
+
