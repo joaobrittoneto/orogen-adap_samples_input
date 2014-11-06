@@ -59,11 +59,17 @@ void Task::updateHook()
 	double last_position;
 
 	static std::queue<double> queueOfPosition;
-	static std::queue<double> queueOfsamples;
+	static std::queue<base::samples::LaserScan> queueOfsamples;
 
      if (_position_samples.read(sample) == RTT::NewData)
     	{	// Position from [mm] to [m]
-    	 if (sample.start_angle <= 0.100){
+    	 if (sample.start_angle <= 0.100 || isnan(sample.ranges[0]==0)){
+
+    		// size of the queue 2*m+1
+    		double m = 100;
+    		double size = 2*m+1;
+    	//	samplesInput->Queue(size, sample, queueOfsamples);
+
     	 	double angle = sample.start_angle;
 
     		actual_sample.position[0] = sample.ranges[0]*cos(angle);
@@ -118,13 +124,17 @@ void Task::updateHook()
 
 
     		//filter value
-    		double m = 100;
-    		double size = 2*m+1;
+
     		position = actual_sample.position[0];
     		samplesInput->Queue(size, position, queueOfPosition);
     		//actual_sample.position[0] = samplesInput->Filter_1(queueOfPosition);
-    		actual_sample.position[0] = samplesInput->Filter_2(queueOfPosition, size, 3, 0);
-    		//actual_sample.velocity[0] = samplesInput->Filter_2(queueOfPosition, size, 3, 1);
+    		//actual_sample.position[0] = samplesInput->Filter_2(queueOfPosition, size, 3, 0);
+    		// Position with will be take in account when applying the filter. May vary from -(queue.size-1)/2 to (queue.size-1)/2 where 0 is at the center of the queue.
+    		double t;
+    		t = 0;
+    		//t = (queueOfPosition.size()-1)/2;
+    		actual_sample.position[0] = samplesInput->Filter_3(queueOfPosition, t, 3, 0);
+    		//actual_sample.velocity[0] = samplesInput->Filter_2(queueOfPosition, size, 2, 1);
 
 /*
     		std::cout << std::endl << "Queue: "<< queueOfPosition.size() << std::endl;
@@ -142,13 +152,13 @@ void Task::updateHook()
     		//std::cout << std::endl << "delta_t: "<< delta_t << std::endl;
     		//std::cout << std::setprecision (std::numeric_limits<double>::digits10 + 1) << std::endl << "actual_sample.time: "<< actual_sample.time.toSeconds() << std::endl;
     		//std::cout << std::setprecision (std::numeric_limits<double>::digits10 + 1) << std::endl << "last_sample.time: "<< last_sample.time.toSeconds() << std::endl;
-    		std::cout << std::endl << "actual_sample.position[0]: "<< actual_sample.position[0] << std::endl;
-    		std::cout << std::endl << "last_sample.position[0]: "<< last_sample.position[0] << std::endl;
-
+    		std::cout << std::endl << "TASK actual_sample.position[0]: "<< actual_sample.position[0] << std::endl;
+    		std::cout << std::endl << "TASK last_sample.position[0]: "<< last_sample.position[0] << std::endl;
+    		//std::cout << std::endl << "queueOfPosition.size(): "<< queueOfPosition.size() << std::endl;
 
     		actual_sample.velocity[0] = samplesInput->Deriv(position, last_position, delta_t);
 
-  //  		std::cout << std::endl << "actual_sample.velocity[0]: "<< actual_sample.velocity[0] << std::endl;
+    		std::cout << std::endl << "TASK actual_sample.velocity[0]: "<< actual_sample.velocity[0] << std::endl;
  //   		std::cout << std::setprecision (std::numeric_limits<double>::digits10 + 1)<< std::endl << "actual_sample.time: "<< actual_sample.time.toSeconds() << std::endl << std::endl;
 
     		last_sample = actual_sample;
