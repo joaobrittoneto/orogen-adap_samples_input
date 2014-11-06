@@ -4,6 +4,11 @@
 #define ADAP_SAMPLES_INPUT_TASK_TASK_HPP
 
 #include "adap_samples_input/TaskBase.hpp"
+#include "adap_samples_input/SamplesInput.hpp"
+//#include "adap_samples_input/SavGol.hpp"
+#include "base/samples/RigidBodyState.hpp"
+#include "base/samples/LaserScan.hpp"
+
 
 namespace adap_samples_input {
 
@@ -27,6 +32,14 @@ namespace adap_samples_input {
     protected:
 
 
+	base::samples::LaserScan sample;
+	base::samples::RigidBodyState actual_sample;
+	base::samples::RigidBodyState last_sample;
+
+	base::samples::RigidBodyState fist_sample;
+	base::samples::RigidBodyState end_sample;
+
+	adap_samples_input::SamplesInput *samplesInput;
 
     public:
         /** TaskContext constructor for Task
