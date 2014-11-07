@@ -31,8 +31,7 @@ namespace adap_samples_input {
 	friend class TaskBase;
     protected:
 
-
-	adap_samples_input::SamplesInput *samplesInput;
+		adap_samples_input::SamplesInput *samplesInput;
 
     public:
         /** TaskContext constructor for Task
