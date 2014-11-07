@@ -32,13 +32,6 @@ namespace adap_samples_input {
     protected:
 
 
-	base::samples::LaserScan sample;
-	base::samples::RigidBodyState actual_sample;
-	base::samples::RigidBodyState last_sample;
-
-	base::samples::RigidBodyState fist_sample;
-	base::samples::RigidBodyState end_sample;
-
 	adap_samples_input::SamplesInput *samplesInput;
 
     public:
