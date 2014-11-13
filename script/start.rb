@@ -7,10 +7,9 @@ include Orocos
 #load log file 
 @log_replay = Orocos::Log::Replay.open("../../../../avalon/orogen/avalonControl/script/avalom_model_tests_20141024/back/20141024-1743/sonar_feature_estimator.0.log", "../../../../avalon/orogen/avalonControl/script/avalom_model_tests_20141024/back/20141024-1743/avalon_back_base_control.0.log")
 
-#@log_forces = Orocos::Log::Replay.open("../../../../avalon/orogen/avalonControl/script/avalom_model_tests_20141024/back/20141024-1743/avalon_back_base_control.0.log")
 
 
-#@log_position.use_sample_time = true
+#@log_replay.use_sample_time = true
 
 
 Orocos.run 'adap_samples_input::Task' => 'adap_samples' do
@@ -21,6 +20,7 @@ Orocos.run 'adap_samples_input::Task' => 'adap_samples' do
     
     widget = Vizkit.default_loader.Plot2d
     widget2 = Vizkit.default_loader.Plot2d
+    widget3 = Vizkit.default_loader.Plot2d
 
       
       
@@ -51,7 +51,8 @@ Orocos.run 'adap_samples_input::Task' => 'adap_samples' do
     adap_samples.forces.connect_to do |sample, _|
           
         #puts sample.elements[0].effort
-    
+         widget3.update(sample.elements[0].effort, "force [N]")
+         widget3.set_y_axis_scale(-1.3,1.3)
             
     end
     
@@ -61,7 +62,8 @@ Orocos.run 'adap_samples_input::Task' => 'adap_samples' do
    
 
     widget.show
-    widget2.show    
+    widget2.show  
+    widget3.show    
         
     #open control widget and start replay
     Vizkit.control @log_replay
