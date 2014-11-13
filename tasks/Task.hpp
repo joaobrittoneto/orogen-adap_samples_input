@@ -5,9 +5,10 @@
 
 #include "adap_samples_input/TaskBase.hpp"
 #include "adap_samples_input/SamplesInput.hpp"
-//#include "adap_samples_input/SavGol.hpp"
 #include "base/samples/RigidBodyState.hpp"
+#include "base/samples/RigidBodyAcceleration.hpp"
 #include "base/samples/LaserScan.hpp"
+#include "base/samples/Joints.hpp"
 
 
 namespace adap_samples_input {

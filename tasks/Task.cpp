@@ -54,11 +54,19 @@ void Task::updateHook()
 	static base::samples::RigidBodyState actual_sample;
 	static base::samples::RigidBodyState last_sample;
 	static base::samples::LaserScan sample;
+	static base::samples::RigidBodyAcceleration acceleration;
+
+
+	static base::samples::Joints forces_sample;
+	static base::samples::Joints forces_output;
+
+
+
 
 	static std::queue<base::samples::RigidBodyState> queueOfsamples;
 
-     if (_position_samples.read(sample) == RTT::NewData)
-    	{
+    if (_position_samples.read(sample) == RTT::NewData)
+    {
     		// size of the queue 2*m+1
     		double m = 100;
     		double size = 2*m+1;
@@ -77,7 +85,7 @@ void Task::updateHook()
     			double t;
     			t = 0;
     			// Savitzky-Golay filter. Filter(queue, t, n, s). queue: RBS. t_th position in queue to be take in account. Converge for a polynomial n_th order. s_th derivative
-    			actual_sample = samplesInput->Filter_4(queueOfsamples, t, 3, 0);
+    			actual_sample = samplesInput->Filter_4(queueOfsamples, t, 2, 0);
 
     			// avoid peak in velocity
     			if (queueOfsamples.size() == 5)
@@ -89,9 +97,9 @@ void Task::updateHook()
     			last_position = last_sample.position[0];
     			//delta_t = (actual_sample.time.toSeconds() - last_sample.time.toSeconds());
     			// Time step is not constant. Use a medium value from observed steps.
-    			delta_t = 0.066;
+    			delta_t = 0.065;
 
-    			actual_sample.velocity[0] = samplesInput->Deriv(position, last_position, delta_t);
+    			actual_sample.velocity[0] = samplesInput->Deriv(position, last_position, delta_t) * (-1); //Backing away from the wall => negative velocity
 
     			//remove the interference of the initial values of the queue.
     			if (queueOfsamples.size() > m &&
@@ -106,12 +114,29 @@ void Task::updateHook()
     			last_sample = actual_sample;
 
     		}
-    	}
+    }
 
 
     if(fmod(queueOfsamples.size(),2) == 1)
+    {
     	_velocity.write(actual_sample);
+    	_acceleration.write(acceleration);
+    }
 
+
+    if (_forces_samples.read(forces_sample) == RTT::NewData)
+    {	std::cout << "new sample: " << std::endl;
+    	samplesInput->ConvertForce(forces_sample, forces_output);
+
+    	std::cout << "forces_output.elements[0].effort: "<< forces_output.elements[0].effort << std::endl;
+    	std::cout << "forces_output.elements[1].effort: "<< forces_output.elements[1].effort << std::endl;
+    	std::cout << "forces_output.elements[2].effort: "<< forces_output.elements[2].effort << std::endl;
+    	std::cout << "forces_output.elements[3].effort: "<< forces_output.elements[3].effort << std::endl;
+    	std::cout << "forces_output.elements[4].effort: "<< forces_output.elements[4].effort << std::endl;
+    	std::cout << "forces_output.elements[5].effort: "<< forces_output.elements[5].effort << std::endl<< std::endl;
+
+    	_forces.write(forces_output);
+    }
 
 }
 void Task::errorHook()

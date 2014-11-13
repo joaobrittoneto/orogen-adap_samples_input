@@ -13,10 +13,19 @@ task_context "Task" do
 
      input_port('position_samples', '/base/samples/LaserScan').
         doc("current position given by sonar_feature_estimator")
+        
+     input_port('forces_samples', '/base/samples/Joints').
+        doc("input pwm signal applied in the thrusters")    
 
     
     output_port('velocity', '/base/samples/RigidBodyState').
         doc("velocity after filter and derivated the position_samples")
+        
+    output_port('acceleration', '/base/samples/RigidBodyAcceleration').
+        doc("accelaration after filter and 2th derivated the position_samples")
+        
+    output_port('forces', '/base/samples/Joints').
+        doc("forces applied in the auv. Convert the pwm input into force and applied the thruster matrix")        
 
     
     port_driven "position_samples"
