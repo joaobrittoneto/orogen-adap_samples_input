@@ -1,5 +1,18 @@
 /* Generated from orogen/lib/orogen/templates/tasks/Task.cpp */
 
+/******************************************************************************/
+/*  Preparing data from Avalon to apply the adaptive parameters identification
+/*
+/*
+/* PURPOSE --- Filter the position signal, derived it to get the velocity and
+/* 				compute the forces applied in the auv
+/*
+/*  João Da Costa Britto Neto
+/*  joao.neto@dfki.de
+/*  DFKI - BREMEN 2014
+/*****************************************************************************/
+
+
 #include "Task.hpp"
 
 using namespace adap_samples_input;
@@ -47,87 +60,53 @@ void Task::updateHook()
 {
     TaskBase::updateHook();
 
-	double delta_t;
-	double position;
-	double last_position;
+    base::samples::LaserScan 							position_sample;
+    base::samples::Joints 								forces_sample;
 
-	static base::samples::RigidBodyState actual_sample;
-	static base::samples::RigidBodyState last_sample;
-	static base::samples::LaserScan sample;
-	static base::samples::RigidBodyAcceleration acceleration;
+	static base::samples::RigidBodyState 				actual_RBS;
+	static base::samples::RigidBodyAcceleration 		actual_RBA;
 
+	static base::samples::Joints 						forces_output;
 
-	static base::samples::Joints forces_sample;
-	static base::samples::Joints forces_output;
+	static std::queue<base::samples::RigidBodyState>	queueOfRBS;
+	static std::queue<base::samples::Joints> 			queueOfForces;
 
-	static std::queue<base::samples::RigidBodyState> queueOfRBS;
-	static std::queue<base::samples::Joints> queueOfForces;
+	static bool first_time = true;
+	if(first_time)
+	{
+		actual_RBS.position = Eigen::VectorXd::Zero(3);
+		actual_RBS.velocity = Eigen::VectorXd::Zero(3);
+		actual_RBA.acceleration = Eigen::VectorXd::Zero(3);
+		forces_output.elements.resize(6);
+		for(int i=0; i<6; i++)
+		{
+			forces_output.elements[i].raw = 0;
+			forces_output.elements[i].effort = 0;
+		}
 
-	// size of the queue 2*m+1
+		if(!queueOfRBS.empty())
+			std::cout << "queueOfRBS not empty at the begin: "<< std::endl;
+		if(!queueOfForces.empty())
+			std::cout << "queueOfForces not empty at the begin: "<< std::endl;
+		first_time = false;
+	}
+
+	// size of the queue 2*m+1. Important for the filter in the position and in compensating the delay
 	const double m = 100;
 	const double size = 2*m+1;
 
-    if (_position_samples.read(sample) == RTT::NewData)
+    if (_position_samples.read(position_sample) == RTT::NewData)
     {
-    	if(sample.start_angle <= 0.100)
-    	{
-    		actual_sample = samplesInput->Convert(sample);
-    		std::cout << "sample_position.time: "<< actual_sample.time.toString() << std::endl;
-
-    		samplesInput->Remove_Outlier(queueOfRBS, actual_sample);
-
-
-
-    		samplesInput->Queue(size, actual_sample, queueOfRBS);
-    		// Filter works for odd values of queue.size
-    		if (fmod(queueOfRBS.size(),2) == 1)
-    		{
-
-    			// Position that will be take in account when applying the filter. May vary from -(queue.size-1)/2 to (queue.size-1)/2 where 0 is at the center of the queue.
-    			double t;
-    			t = 0;
-    			// Savitzky-Golay filter. Filter(queue, t, n, s). queue: RBS. t_th position in queue to be take in account. Converge for a polynomial n_th order. s_th derivative
-    			actual_sample = samplesInput->Filter_4(queueOfRBS, t, 2, 0);
-
-    			// avoid peak in velocity
-    			if (queueOfRBS.size() == 5)
-    				{last_sample = actual_sample;
-    				last_sample.time = base::Time::now()-actual_sample.time;
-    				}
-    			//position
-    			position = actual_sample.position[0];
-    			last_position = last_sample.position[0];
-    			//delta_t = (actual_sample.time.toSeconds() - last_sample.time.toSeconds());
-    			// Time step is not constant. Use a medium value from observed steps.
-    			delta_t = 0.065;
-
-    			actual_sample.velocity[0] = samplesInput->Deriv(position, last_position, delta_t) * (-1); //Backing away from the wall => negative velocity
-
-    			//remove the interference of the initial values of the queue.
-    			if (queueOfRBS.size() > m &&
-    					(((fabs(actual_sample.velocity[0]/last_sample.velocity[0]) > 2 || fabs(actual_sample.velocity[0]/last_sample.velocity[0]) < 0.5)
-    							&& fabs(last_sample.velocity[0]) > 0.1)	||
-    							(fabs(last_sample.velocity[0])<= 0.1 && fabs(actual_sample.velocity[0])>= 0.2)
-    						))
-    				{
-    				actual_sample.velocity[0] = last_sample.velocity[0];
-    				}
-
-    			last_sample = actual_sample;
-    		}
-    	}
-
+    	samplesInput->Update_Velocity(position_sample, queueOfRBS, size, actual_RBS, actual_RBA);
     }
 
 
     if (_forces_samples.read(forces_sample) == RTT::NewData)
        {
-       	samplesInput->ConvertForce(forces_sample, forces_output);
-       	std::cout << "forces_input.time: "<< forces_output.time.toString() << std::endl;
-
-       	samplesInput->Queue(m, forces_output, queueOfForces);
+       	samplesInput->Update_Force(forces_sample, queueOfForces, m, forces_output);
 
 
+       	//std::cout << "forces_input.time: "<< forces_output.time.toString() << std::endl;
        	//std::cout << "forces_output.surge: "<< forces_output.elements[0].effort << std::endl;
        	//std::cout << "forces_output.sway: "<< forces_output.elements[1].effort << std::endl;
        	//std::cout << "forces_output.heave: "<< forces_output.elements[2].effort << std::endl;
@@ -140,21 +119,11 @@ void Task::updateHook()
     //if(queueOfRBS.size() == size || queueOfForces.size() == m)
     if(fmod(queueOfRBS.size(),2) == 1 && queueOfForces.size() > 1 )
     {
-    	base::samples::Joints time_force;
-    	for(int i=0; i < queueOfForces.size(); i++)
-    	{
-    		time_force = queueOfForces.front();
-    		queueOfForces.pop();
-    			if( fabs((actual_sample.time-time_force.time).toSeconds()) <= 0.1)
-    				{forces_output = time_force;
-    				std::cout << "i: "<< i << std::endl;
-    				}
-    		queueOfForces.push(time_force);
-    	}
+    	samplesInput->Delay_Compensate(actual_RBS, queueOfForces, forces_output);
 
-    	std::cout << "velocity.time: "<< actual_sample.time.toString() << std::endl;
-    	_velocity.write(actual_sample);
-    	_acceleration.write(acceleration);
+    	std::cout << "velocity.time: "<< actual_RBS.time.toString() << std::endl;
+    	_velocity.write(actual_RBS);
+    	_acceleration.write(actual_RBA);
 
     	//std::cout << "forces_output.surge: "<< forces_output.elements[0].effort << std::endl;
     	//std::cout << "forces_output.sway: "<< forces_output.elements[1].effort << std::endl;
@@ -170,28 +139,6 @@ void Task::updateHook()
 
 
 
-
-
-
-    //if(fmod(queueOfRBS.size(),2) == 1 /* && (actual_sample.time-forces_output.time)<=base::Time::fromMilliseconds(100)*/)
-/*    if(queueOfRBS.size() == size)
-    {
-    	std::cout << "velocity.time: "<< actual_sample.time.toString() << std::endl;
-      	_velocity.write(actual_sample);
-      	_acceleration.write(acceleration);
-    }
-
-
-
-
-
-    //if((forces_output.time-actual_sample.time)<=base::Time::fromMilliseconds(100))
-   	if (queueOfForces.size() == m )
-    {
-    	std::cout << "forces_output.time: "<< forces_output.time.toString() << std::endl<< std::endl;
-  		_forces.write(forces_output);
-   	}
-*/
 }
 void Task::errorHook()
 {

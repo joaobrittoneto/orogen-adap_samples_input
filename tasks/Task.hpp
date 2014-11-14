@@ -3,6 +3,19 @@
 #ifndef ADAP_SAMPLES_INPUT_TASK_TASK_HPP
 #define ADAP_SAMPLES_INPUT_TASK_TASK_HPP
 
+/******************************************************************************/
+/*  Preparing data from Avalon to apply the adaptive parameters identification
+/*
+/*
+/* PURPOSE --- Filter the position signal, derived it to get the velocity and
+/* 				compute the forces applied in the auv
+/*
+/*  João Da Costa Britto Neto
+/*  joao.neto@dfki.de
+/*  DFKI - BREMEN 2014
+/*****************************************************************************/
+
+
 #include "adap_samples_input/TaskBase.hpp"
 #include "adap_samples_input/SamplesInput.hpp"
 #include "base/samples/RigidBodyState.hpp"
