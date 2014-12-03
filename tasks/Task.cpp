@@ -92,7 +92,7 @@ void Task::updateHook()
 	}
 
 	// size of the queue 2*m+1. Important for the filter in the position and in compensating the delay
-	const double m = 100;
+	const double m = 79;
 	const double size = 2*m+1;
 
     if (_position_samples.read(position_sample) == RTT::NewData)
@@ -105,38 +105,20 @@ void Task::updateHook()
        {
        	samplesInput->Update_Force(forces_sample, queueOfForces, m, forces_output);
 
-
-       	//std::cout << "forces_input.time: "<< forces_output.time.toString() << std::endl;
-       	//std::cout << "forces_output.surge: "<< forces_output.elements[0].effort << std::endl;
-       	//std::cout << "forces_output.sway: "<< forces_output.elements[1].effort << std::endl;
-       	//std::cout << "forces_output.heave: "<< forces_output.elements[2].effort << std::endl;
-       	//std::cout << "forces_output.roll: "<< forces_output.elements[3].effort << std::endl;
-       	//std::cout << "forces_output.pitch: "<< forces_output.elements[4].effort << std::endl;
-       	//std::cout << "forces_output.yaw: "<< forces_output.elements[5].effort << std::endl;
        }
 
 
-    //if(queueOfRBS.size() == size || queueOfForces.size() == m)
-    if(fmod(queueOfRBS.size(),2) == 1 && queueOfForces.size() > 1 )
+
+    if(fmod(queueOfRBS.size(),2) == 1 && queueOfRBS.size() == size && queueOfForces.size() > 1)
     {
     	samplesInput->Delay_Compensate(actual_RBS, queueOfForces, forces_output);
 
-    	std::cout << "velocity.time: "<< actual_RBS.time.toString() << std::endl;
     	_velocity.write(actual_RBS);
     	_acceleration.write(actual_RBA);
 
-    	//std::cout << "forces_output.surge: "<< forces_output.elements[0].effort << std::endl;
-    	//std::cout << "forces_output.sway: "<< forces_output.elements[1].effort << std::endl;
-    	//std::cout << "forces_output.heave: "<< forces_output.elements[2].effort << std::endl;
-    	//std::cout << "forces_output.roll: "<< forces_output.elements[3].effort << std::endl;
-    	//std::cout << "forces_output.pitch: "<< forces_output.elements[4].effort << std::endl;
-    	//std::cout << "forces_output.yaw: "<< forces_output.elements[5].effort << std::endl;
-
-    	std::cout << "forces_output.time: "<< forces_output.time.toString() << std::endl<< std::endl;
     	_forces.write(forces_output);
 
     }
-
 
 
 }
