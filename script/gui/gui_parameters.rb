@@ -14,6 +14,8 @@ class Supervisory
     @dofs = adap.dofs
     @freq = adap.ftau
     @stime = adap.sTime
+    @min_norm_error = 10
+    @old_min_norm_error = 10
     
         
     ##############
@@ -160,19 +162,19 @@ class Supervisory
       vectorFrequency = [@window.frex.value, @window.frey.value, @window.frez.value,
                          @window.frerx.value, @window.frery.value, @window.frerz.value]
       
-      vectorAmplitude = [@window.ampx.value, @window.ampy.value, @window.ampz.value,
-                         @window.amprx.value, @window.ampry.value, @window.amprz.value]
+     # vectorAmplitude = [@window.ampx.value, @window.ampy.value, @window.ampz.value,
+     #                    @window.amprx.value, @window.ampry.value, @window.amprz.value]
       
-      vecotrOffset = [@window.offx.value, @window.offy.value, @window.offz.value,
-                      @window.offrx.value, @window.offry.value, @window.offrz.value]
+     # vecotrOffset = [@window.offx.value, @window.offy.value, @window.offz.value,
+     #                 @window.offrx.value, @window.offry.value, @window.offrz.value]
                                                    
       
       gainA.from_a(vectorGainA)
       gainLambda.from_a(matrixGainLambda, 6, 4, false)
       
       frequency.from_a(vectorFrequency)
-      amplitude.from_a(vectorAmplitude)
-      offset.from_a(vecotrOffset)
+     # amplitude.from_a(vectorAmplitude)
+     # offset.from_a(vecotrOffset)
       
       
       adap.gA = gainA
@@ -287,6 +289,11 @@ class Supervisory
                 @window.deltaV_normalized.set_y_axis_scale(-0.0005, 0.001)
         end
                 
+        if @min_norm_error > sample
+                @min_norm_error = sample         
+        end
+        @window.deltaV_normalized.update(@min_norm_error, " ")        
+                
     end
   end
   
@@ -328,33 +335,38 @@ class Supervisory
         @window.quadraticD.set_y_axis_scale(sample.quadraticDampingCoeff[@dof].positive/1.5, sample.quadraticDampingCoeff[@dof].positive*1.5) 
         @window.buoyancy.set_y_axis_scale(sample.gravityAndBuoyancy[@dof]/1.5, sample.gravityAndBuoyancy[@dof]*1.5) 
         
-        @window.xIner.display sample.inertiaCoeff[0].positive
-        @window.yIner.display sample.inertiaCoeff[1].positive
-        @window.zIner.display sample.inertiaCoeff[2].positive
-        @window.rxIner.display sample.inertiaCoeff[3].positive
-        @window.ryIner.display sample.inertiaCoeff[4].positive
-        @window.rzIner.display sample.inertiaCoeff[5].positive
-       
-        @window.xQuad.display sample.quadraticDampingCoeff[0].positive
-        @window.yQuad.display sample.quadraticDampingCoeff[1].positive
-        @window.zQuad.display sample.quadraticDampingCoeff[2].positive
-        @window.rxQuad.display sample.quadraticDampingCoeff[3].positive
-        @window.ryQuad.display sample.quadraticDampingCoeff[4].positive
-        @window.rzQuad.display sample.quadraticDampingCoeff[5].positive
+        if @old_min_norm_error > @min_norm_error
         
-        @window.xLin.display sample.linearDampingCoeff[0].positive
-        @window.yLin.display sample.linearDampingCoeff[1].positive
-        @window.zLin.display sample.linearDampingCoeff[2].positive
-        @window.rxLin.display sample.linearDampingCoeff[3].positive
-        @window.ryLin.display sample.linearDampingCoeff[4].positive
-        @window.rzLin.display sample.linearDampingCoeff[5].positive
-        
-        @window.xBuoy.display sample.gravityAndBuoyancy[0]
-        @window.yBuoy.display sample.gravityAndBuoyancy[1]
-        @window.zBuoy.display sample.gravityAndBuoyancy[2]
-        @window.rxBuoy.display sample.gravityAndBuoyancy[3]
-        @window.ryBuoy.display sample.gravityAndBuoyancy[4]
-        @window.rzBuoy.display sample.gravityAndBuoyancy[5]
+                @window.xIner.display sample.inertiaCoeff[0].positive
+                @window.yIner.display sample.inertiaCoeff[1].positive
+                @window.zIner.display sample.inertiaCoeff[2].positive
+                @window.rxIner.display sample.inertiaCoeff[3].positive
+                @window.ryIner.display sample.inertiaCoeff[4].positive
+                @window.rzIner.display sample.inertiaCoeff[5].positive
+               
+                @window.xQuad.display sample.quadraticDampingCoeff[0].positive
+                @window.yQuad.display sample.quadraticDampingCoeff[1].positive
+                @window.zQuad.display sample.quadraticDampingCoeff[2].positive
+                @window.rxQuad.display sample.quadraticDampingCoeff[3].positive
+                @window.ryQuad.display sample.quadraticDampingCoeff[4].positive
+                @window.rzQuad.display sample.quadraticDampingCoeff[5].positive
+                
+                @window.xLin.display sample.linearDampingCoeff[0].positive
+                @window.yLin.display sample.linearDampingCoeff[1].positive
+                @window.zLin.display sample.linearDampingCoeff[2].positive
+                @window.rxLin.display sample.linearDampingCoeff[3].positive
+                @window.ryLin.display sample.linearDampingCoeff[4].positive
+                @window.rzLin.display sample.linearDampingCoeff[5].positive
+                
+                @window.xBuoy.display sample.gravityAndBuoyancy[0]
+                @window.yBuoy.display sample.gravityAndBuoyancy[1]
+                @window.zBuoy.display sample.gravityAndBuoyancy[2]
+                @window.rxBuoy.display sample.gravityAndBuoyancy[3]
+                @window.ryBuoy.display sample.gravityAndBuoyancy[4]
+                @window.rzBuoy.display sample.gravityAndBuoyancy[5]
+                
+                @old_min_norm_error = @min_norm_error
+         end
             
     end       
      

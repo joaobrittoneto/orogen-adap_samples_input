@@ -68,6 +68,8 @@ void Task::updateHook()
 
 	static base::samples::Joints 						forces_output;
 
+	adap_samples_input::DynamicAUV						dynamic;
+
 	static std::queue<base::samples::RigidBodyState>	queueOfRBS;
 	static std::queue<base::samples::Joints> 			queueOfForces;
 
@@ -94,31 +96,46 @@ void Task::updateHook()
 	// size of the queue 2*m+1. Important for the filter in the position and in compensating the delay
 	const double m = 79;
 	const double size = 2*m+1;
+	static bool doit = false;
+
+
+	if (_forces_samples.read(forces_sample) == RTT::NewData)
+	{
+	   	samplesInput->Update_Force(forces_sample, queueOfForces, size, forces_output);
+	}
+
 
     if (_position_samples.read(position_sample) == RTT::NewData)
     {
-    	samplesInput->Update_Velocity(position_sample, queueOfRBS, size, actual_RBS, actual_RBA);
+    	doit = samplesInput->Update_Velocity(position_sample, queueOfRBS, size, actual_RBS, actual_RBA);
     }
 
 
-    if (_forces_samples.read(forces_sample) == RTT::NewData)
-       {
-       	samplesInput->Update_Force(forces_sample, queueOfForces, m, forces_output);
-
-       }
-
-
-
-    if(fmod(queueOfRBS.size(),2) == 1 && queueOfRBS.size() == size && queueOfForces.size() > 1)
+    if(fmod(queueOfRBS.size(),2) == 1 && queueOfRBS.size() == size && queueOfForces.size() > 1 && doit)
     {
-    	samplesInput->Delay_Compensate(actual_RBS, queueOfForces, forces_output);
+       	bool aligned = samplesInput->Delay_Compensate(actual_RBS, queueOfForces, forces_output);
 
-    	_velocity.write(actual_RBS);
-    	_acceleration.write(actual_RBA);
+       	doit = false;
 
-    	_forces.write(forces_output);
+       	if(aligned)
+       	{
+       		samplesInput->Agglomerate(forces_output,actual_RBS, actual_RBA, dynamic);
+       		_dynamic.write(dynamic);
+       		_velocity.write(actual_RBS);
+       		_acceleration.write(actual_RBA);
+       		_forces.write(forces_output);
+       		//static int number = 0;
+       		//number++;
+       		//std::cout<< std::endl << "number of samples: "<< number << std::endl;
 
+       	}
     }
+
+
+
+
+
+
 
 
 }

@@ -3,9 +3,10 @@ name "adap_samples_input"
 # version "0.1"
 
 
-import_types_from "base"
-
 using_library "adap_samples_input"
+
+import_types_from "base"
+import_types_from "adap_samples_input/samples_dataType.h"
 
 
 task_context "Task" do
@@ -25,10 +26,13 @@ task_context "Task" do
         doc("accelaration after filter and 2th derivated the position_samples")
         
     output_port('forces', '/base/samples/Joints').
-        doc("forces applied in the auv. Convert the pwm input into force and applied the thruster matrix")        
+        doc("forces applied in the auv. Convert the pwm input into force and applied the thruster matrix")    
+        
+    output_port('dynamic', 'adap_samples_input::DynamicAUV').
+        doc("agglomerate all data of the other ports (force, rbs and rba) ")          
 
     
-    port_driven "position_samples"
+    port_driven 
     
 end
 
