@@ -94,28 +94,28 @@ void Task::updateHook()
 	}
 
 	// size of the queue 2*m+1. Important for the filter in the position and in compensating the delay
-	const double m = 79;
+	const double m = 80; // 161 ≃ number of samples in a period of 0.3 rad/s w/ sample time of 0.065s (pi/0.3/0.065)
 	const double size = 2*m+1;
-	static bool doit = false;
+	static bool doIt = false;
 
 
 	if (_forces_samples.read(forces_sample) == RTT::NewData)
 	{
-	   	samplesInput->Update_Force(forces_sample, queueOfForces, size, forces_output);
+	   	samplesInput->Update_Force_Avalon(forces_sample, queueOfForces, size, forces_output);
 	}
 
 
     if (_position_samples.read(position_sample) == RTT::NewData)
     {
-    	doit = samplesInput->Update_Velocity(position_sample, queueOfRBS, size, actual_RBS, actual_RBA);
+    	doIt = samplesInput->Update_Velocity_Avalon(position_sample, queueOfRBS, size, actual_RBS, actual_RBA);
     }
 
 
-    if(fmod(queueOfRBS.size(),2) == 1 && queueOfRBS.size() == size && queueOfForces.size() > 1 && doit)
+    if(fmod(queueOfRBS.size(),2) == 1 && queueOfRBS.size() == size && queueOfForces.size() > 1 && doIt)
     {
        	bool aligned = samplesInput->Delay_Compensate(actual_RBS, queueOfForces, forces_output);
 
-       	doit = false;
+       	doIt = false;
 
        	if(aligned)
        	{
