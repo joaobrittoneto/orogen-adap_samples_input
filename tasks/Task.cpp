@@ -95,6 +95,8 @@ void Task::updateHook()
 
 	// size of the queue 2*m+1. Important for the filter in the position and in compensating the delay
 	const double m = 80; // 161 ≃ number of samples in a period of 0.3 rad/s w/ sample time of 0.065s (pi/0.3/0.065)
+	//const double m = 48; // 97 ≃ number of samples in a period of 0.5 rad/s w/ sample time of 0.065s (pi/0.5/0.065)
+	//const double m = 160;
 	const double size = 2*m+1;
 	static bool doIt = false;
 

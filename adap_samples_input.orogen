@@ -36,3 +36,32 @@ task_context "Task" do
     
 end
 
+
+
+task_context "Seabotix" do    
+
+     input_port('position_samples', '/base/samples/RigidBodyState').
+        doc("current position given by detector.pose //camera ")
+        
+     input_port('forces_samples', '/base/samples/Joints').
+        doc("input pwm signal applied in the thrusters")    
+
+    
+    output_port('velocity', '/base/samples/RigidBodyState').
+        doc("velocity after filter and derivated the position_samples")
+        
+    output_port('acceleration', '/base/samples/RigidBodyAcceleration').
+        doc("accelaration after filter and 2th derivated the position_samples")
+        
+    output_port('forces', '/base/samples/Joints').
+        doc("forces applied in the auv. Convert the pwm input into force and applied the thruster matrix")    
+        
+    output_port('dynamic', 'adap_samples_input::DynamicAUV').
+        doc("agglomerate all data of the other ports (force, rbs and rba) ")          
+
+    
+    port_driven 
+    
+end
+
+

@@ -328,7 +328,7 @@ class Supervisory
         @window.inertia.update(sample.inertiaCoeff[@dof].positive, "kg or Kg*m^2/rad" ) #
         @window.linearD.update(sample.linearDampingCoeff[@dof].positive, "Kg/s or Kg*m^2/(rad*s)" )
         @window.quadraticD.update(sample.quadraticDampingCoeff[@dof].positive, "Kg/m or Kg*m^2" ) #or Kg*rad
-        @window.buoyancy.update(sample.gravityAndBuoyancy[@dof], "Kg*m/s or Kg*m^2/s^2") #or Kg*rad/s²
+        @window.buoyancy.update(sample.gravityAndBuoyancy[@dof], "N or N*m") #or Kg*rad/s²
         
         @window.inertia.set_y_axis_scale(sample.inertiaCoeff[@dof].positive/1.5, sample.inertiaCoeff[@dof].positive*1.5) 
         @window.linearD.set_y_axis_scale(sample.linearDampingCoeff[@dof].positive/1.5, sample.linearDampingCoeff[@dof].positive*1.5) 

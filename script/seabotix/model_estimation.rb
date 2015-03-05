@@ -2,7 +2,7 @@
 require 'orocos'
 require 'vizkit'
 require './adap_properties3.rb'
-require './gui/gui_parameters.rb'
+require './../gui/gui_parameters.rb'
 
 include Orocos
 
@@ -12,15 +12,10 @@ include Orocos
 
 #Orocos.initialize
 
-
-# Experiment made at 24/10/2014 from 18:01:07.207319 until 18:07:32.118947 at DFKI, applying a signal (setpoint velocity in surge of 1*sin(f*t)) of frequencie of 0.3 rad/s in surge direction in the AUV Avalon
-@log_replay = Orocos::Log::Replay.open("../../../../../Log_files/avalon_logFiles/avalom_model_tests_20141024/back/20141024-1743/test_18h01m.log")
-
-# Experiment made at 24/10/2014 from 17:47:21.488977 until 17:51:54.407288 at DFKI, applying a signal (setpoint velocity in surge of 1*sin(f*t)) of frequencie of 0.5 rad/s in surge direction in the AUV Avalon
-#@log_replay = Orocos::Log::Replay.open("../../../../../Log_files/avalon_logFiles/avalom_model_tests_20141024/back/20141024-1743/test_17h47m.log")
+@log_replay = Orocos::Log::Replay.open("../../../../../../Log_files/seabotix_logFiles/seabotix201501091640/detector.0.log", "../../../../../../Log_files/seabotix_logFiles/seabotix201501091640/Seabotix.0.log")
 
 
-Orocos.run 'adap_samples_input::Task' => 'adap_samples',
+Orocos.run 'adap_samples_input::Seabotix' => 'adap_samples',
            'adap_parameters_estimator::Task' => 'parameters_estimator' do
 
     adap_samples = TaskContext.get 'adap_samples'
@@ -40,8 +35,9 @@ Orocos.run 'adap_samples_input::Task' => 'adap_samples',
     adapP = configure_adap
       
     
-    @log_replay.sonar_feature_estimator.new_feature.connect_to adap_samples.position_samples
-    @log_replay.motion_control.joint_commands.connect_to adap_samples.forces_samples
+    @log_replay.detector.pose.connect_to adap_samples.position_samples
+    @log_replay.Seabotix.thrusters_states.connect_to adap_samples.forces_samples
+    #@log_replay.EffortToControl.control_output.connect_to adap_samples.forces_samples
     
     #adap_samples.forces.connect_to adapP.thruster_samples
     #adap_samples.velocity.connect_to adapP.speed_samples
