@@ -1,0 +1,70 @@
+--- name:default
+# degree of freedom.
+dof: :SURGE
+# no documentation available for this property
+metadata:
+  metadata: []
+  properties: []
+  input_ports: []
+  output_ports: []
+  
+
+--- name:surge
+# degree of freedom.
+dof: :SURGE
+# no documentation available for this property
+metadata:
+  metadata: []
+  properties: []
+  input_ports: []
+  output_ports: []
+  
+ --- name:sway
+# degree of freedom.
+dof: :SWAY
+# no documentation available for this property
+metadata:
+  metadata: []
+  properties: []
+  input_ports: []
+  output_ports: []
+  
+ --- name:heave
+# degree of freedom.
+dof: :HEAVE
+# no documentation available for this property
+metadata:
+  metadata: []
+  properties: []
+  input_ports: []
+  output_ports: []
+  
+--- name:roll
+# degree of freedom.
+dof: :ROLL
+# no documentation available for this property
+metadata:
+  metadata: []
+  properties: []
+  input_ports: []
+  output_ports: []
+  
+--- name:pitch
+# degree of freedom.
+dof: :PITCH
+# no documentation available for this property
+metadata:
+  metadata: []
+  properties: []
+  input_ports: []
+  output_ports: []
+  
+--- name:yaw
+# degree of freedom.
+dof: :YAW
+# no documentation available for this property
+metadata:
+  metadata: []
+  properties: []
+  input_ports: []
+  output_ports: []  

@@ -64,4 +64,52 @@ task_context "Seabotix" do
     
 end
 
+task_context "Dagon" do    
+     
+     # If true, data will be aligned (use for least squarer method). If false, the data will be trasmited direct after treatment.      
+     property "aligned_data", "bool", true  
+     # If true, use the velocitu data from pose_estimator. If false use the data from DVL and orientation_estimation
+     property "pose_estimator_data", "bool", true 
+     # sample time of pose_sample      
+     property "step", "double", 0.01   
+     # convert thruster rpm into force or surge. [0]:posX, [1]:negX, [2]:posY/Z, [3]:negY/Z
+     property "Cv", "base::VectorXd"
+     # matrix of trhuster. identifie the forces and torques aplied for each of n trhuster
+     property "TCM", "base::MatrixXd" 
+  
+     ## Use case pose_estimator_data is false
+     input_port('dvl_samples', '/base/samples/RigidBodyState').
+        doc("current velocity given by dvl")
+     ## Use case pose_estimator_data is false
+     input_port('orientation_samples', '/base/samples/RigidBodyState').
+        doc("current orientation given by orientation estimation (imu/fog)")   
+     
+     ## Use case pose_estimator_data is true   
+     input_port('position_samples', '/base/samples/RigidBodyState').
+        doc("current position given by pose_estimation (dvl and imu/fog) ")
+        
+     input_port('forces_samples', '/base/samples/Joints').
+        doc("angular_velocity of thrusters in rpm (V)")    
+
+    
+     output_port('velocity', '/base/samples/RigidBodyState').
+        doc("velocity after filter. Used for alligned porpose with acceleration")
+        
+     output_port('lin_acceleration', '/base/samples/RigidBodyAcceleration').
+        doc("linear accelaration after derivated the velocity_samples")
+        
+     output_port('ang_acceleration', '/base/samples/RigidBodyAcceleration').
+        doc("angular accelaration after derivated the velocity_samples")    
+        
+     output_port('forces', '/base/samples/Joints').
+        doc("forces applied in the auv. Convert the rpm into force and applied the thruster matrix")    
+        
+     output_port('dynamic', 'adap_samples_input::DynamicAUV').
+        doc("agglomerate all data of the other ports (force, rbs and lin_rba, ang_rba) alligned ")          
+
+    
+     port_driven 
+    
+end
+
 

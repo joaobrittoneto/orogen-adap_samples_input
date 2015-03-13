@@ -1,0 +1,75 @@
+--- name:default
+# convert thruster rpm into force or surge
+Cv:
+  data: []
+# matrix of trhuster. identifie the forces and torques aplied for each of n trhuster
+TCM:
+  rows: 0
+  cols: 0
+  data: []
+# If true, no acceleration data is required. If false the pseudo-inverse will be applied and acceleration data is required
+adap: true
+# no documentation available for this property
+metadata:
+  metadata: []
+  properties: []
+  input_ports: []
+  output_ports: []
+# sample time of pose_sample
+step: 0.01
+
+--- name:dagon
+# convert thruster rpm into force or surge
+Cv:
+  data: 
+  - 0.113126622
+  - 0.083426624
+  - 0.01992116
+  - 0.01541807
+  
+# matrix of trhuster. identifie the forces and torques aplied for each of n trhuster
+TCM:
+  rows: 6
+  cols: 5
+  data:
+  - 0.0 ## dive_tail
+  - 0.0
+  - -1.0
+  - 0.0
+  - -0.39
+  - 0.0
+  - 0.0 ## dive_head
+  - 0.0
+  - -1.0
+  - 0.0
+  - 0.16
+  - 0.0
+  - 1.0 ## surge_left
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - -0.38
+  - 1.0 ## surge_right
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.38
+  - 0.0 ## sway_tail
+  - -1.0
+  - 0.0
+  - 0.06
+  - 0.0
+  - 0.55
+  
+# If true, no acceleration data is required. If false the pseudo-inverse will be applied and acceleration data is required
+adap: true
+# no documentation available for this property
+metadata:
+  metadata: []
+  properties: []
+  input_ports: []
+  output_ports: []
+# sample time of pose_sample
+step: 0.07
