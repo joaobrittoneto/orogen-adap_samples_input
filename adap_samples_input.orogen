@@ -64,6 +64,7 @@ task_context "Seabotix" do
     
 end
 
+
 task_context "Dagon" do    
      
      # If true, data will be aligned (use for least squarer method). If false, the data will be trasmited direct after treatment.      
@@ -111,5 +112,137 @@ task_context "Dagon" do
      port_driven 
     
 end
+
+
+
+
+task_context "ForceApplier" do    
+    needs_configuration
+     
+     # The amount of actuators the vehicle has
+     property "number_of_thruster", "int"
+     # Convert thruster signal into forces, in positive direction. Should have the size of amount_of_actuators 
+     property "thruster_coefficients_Pos", "base::VectorXd"
+     # Convert thruster signal into forces, in negative direction. Should have the size of amount_of_actuators
+     property "thruster_coefficients_Neg", "base::VectorXd"    
+     # Matrix of trhuster. Identifie the forces and torques aplied for each of n trhuster
+     property "TCM", "base::MatrixXd" 
+     # If left empty, uses RAW by default
+     property "control_modes", "std::vector<base::JointState::MODE>" 
+     # In case the control mode is PWM, used to convert the signal into DC Voltage  
+     property "thrusterVoltage", "double", 0  
+     # Names of the thrusters
+     # Leave empty to use no names
+     property "names", "std::vector<std::string>"  
+     # If true, will not write the output. The forces may be treated in other task if ForceApplier is used as subclasses
+     property "treatOutput", "bool", false     
+  
+    
+     ## Thrusters signal    
+     input_port('thruster_samples', '/base/samples/Joints').
+        doc("thrusters signal")    
+     
+     ## Forces and torques applied in the vehicle in body-frame    
+     output_port('forces', '/base/samples/Joints').
+        doc("Forces applied in the auv. Convert the input signal into force and applied the thruster matrix.")  
+     ## Forces and signals applied for each thruster in the vehicle    
+     output_port('thruster_forces', '/base/samples/Joints').
+        doc("Forces and signals applied by each thruster in the auv.")         
+   
+     exception_states :WRONG_SIZE_OF_CONTROLMODES, :WRONG_SIZE_OF_THRUSTER_COEFFICIENTS, :WRONG_SIZE_OF_NAMES,
+                      :WRONG_SIZE_OF_THRUSTER_MATRIX, :UNSET_THRUSTER_INPUT, :UNEXPECTED_THRUSTER_INPUT 
+           
+     port_driven 
+end
+
+
+
+task_context "GetPoseForce" do    
+     subclasses "ForceApplier"
+  
+   
+     # If true, data will be aligned (use for least square method). If false, the data will be trasmited direct after treatment.      
+     property "aligned_data", "bool", true  
+     # sample time of pose_sample      
+     property "step", "double", 0.01   
+     
+      
+     ## Pose samples in world-frame  
+     input_port('pose_samples', '/base/samples/RigidBodyState').
+        doc("current position given by pose_estimation (dvl and imu/fog) ")
+        
+
+     ## Outputs of velocities, acceleration, forces and torques   
+     output_port('velocity', '/base/samples/RigidBodyState').
+        doc("velocity after filter. Used for alligned porpose with acceleration")
+        
+     output_port('lin_acceleration', '/base/samples/RigidBodyAcceleration').
+        doc("linear accelaration after derivated the velocity_samples")
+        
+     output_port('ang_acceleration', '/base/samples/RigidBodyAcceleration').
+        doc("angular accelaration after derivated the velocity_samples")       
+        
+     output_port('dynamic', 'adap_samples_input::DynamicAUV').
+        doc("agglomerate all data of the other ports (force, rbs and lin_rba, ang_rba) alligned ")          
+
+    
+     port_driven 
+    
+end
+
+task_context "GetPoseForcePeriodic" do    
+     #subclasses "ForceApplier"
+  
+   
+     # If true, data will be aligned and transmitted (use for adaptive method). If false, acceleration will be computed, with delay (use for least square method).      
+     property "adap_method", "bool", true  
+     # sample time of pose_sample      
+     property "step", "double", 0.01   
+     # degree of polynomial for filter, to get acceleration      
+     property "poly", "double", 3
+     # Half minus one amount of data used to compute the acceleration      
+     property "halfSize", "int", 50
+     # Position of the computed acceleration. from -halfSize to +halfSize      
+     property "posFilter", "double", 0
+     
+      
+     ## Pose samples in world-frame  
+     input_port('pose_samples', '/base/samples/RigidBodyState').
+        doc("current position given by pose_estimation (dvl and imu/fog) ")
+        
+     ## Thrusters signal    
+     input_port('forces_samples', '/base/samples/Joints').
+        doc("Forces and torques applied in the vehicle")   
+        
+
+     ## Outputs of velocities, acceleration, forces and torques   
+     #output_port('velocity', '/base/samples/RigidBodyState').
+      #  doc("velocity after filter. Used for alligned porpose with acceleration")
+        
+     #output_port('lin_acceleration', '/base/samples/RigidBodyAcceleration').
+      #  doc("linear accelaration after derivated the velocity_samples")
+        
+     #output_port('ang_acceleration', '/base/samples/RigidBodyAcceleration').
+      # doc("angular accelaration after derivated the velocity_samples")       
+        
+     output_port('dynamic', 'adap_samples_input::DynamicAUV').
+        doc("agglomerate all data of the other ports (force, rbs and lin_rba, ang_rba) alligned ")          
+        
+     #******************************
+     #** Aggregator Parameters ***** 
+     #******************************
+     transformer do
+        #transformation("body", "world")
+        
+        align_port("pose_samples", 0.01)
+        align_port("forces_samples", 0.01)
+        max_latency(0.1)
+     end   
+    
+     periodic 0.01 
+    
+end
+
+
 
 

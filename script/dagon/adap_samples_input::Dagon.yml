@@ -1,29 +1,6 @@
 --- name:default
 # convert thruster rpm into force or surge. [0]:posX, [1]:negX, [2]:posY/Z, [3]:negY/Z
 Cv:
-  data: []
-# matrix of trhuster. identifie the forces and torques aplied for each of n trhuster
-TCM:
-  rows: 0
-  cols: 0
-  data: []
-# If true, data will be aligned (use for least squarer method). If false, the data will be trasmited direct after treatment.
-aligned_data: true
-# no documentation available for this property
-metadata:
-  metadata: []
-  properties: []
-  input_ports: []
-  output_ports: []
-# If true, use the velocitu data from pose_estimator. If false use the data from DVL and orientation_estimation
-pose_estimator_data: true
-# sample time of pose_sample
-step: 0.01
-
-
---- name:dagon
-# convert thruster rpm into force or surge. [0]:posX, [1]:negX, [2]:posY/Z, [3]:negY/Z
-Cv:
   data: 
   - 0.113126622
   - 0.083426624
@@ -72,6 +49,58 @@ metadata:
   properties: []
   input_ports: []
   output_ports: []
+# If true, use the velocitu data from pose_estimator. If false use the data from DVL and orientation_estimation
+pose_estimator_data: true
+# sample time of pose_sample
+step: 0.07
+
+
+--- name:dagon
+# convert thruster rpm into force or surge. [0]:posX, [1]:negX, [2]:posY/Z, [3]:negY/Z
+Cv:
+  data: 
+  - 0.113126622
+  - 0.083426624
+  - 0.01992116
+  - 0.01541807
+# matrix of trhuster. identifie the forces and torques aplied for each of n trhuster
+TCM:
+  rows: 6
+  cols: 5
+  data:
+  - 0.0 ## dive_tail
+  - 0.0
+  - -1.0
+  - 0.0
+  - -0.39
+  - 0.0
+  - 0.0 ## dive_head
+  - 0.0
+  - -1.0
+  - 0.0
+  - 0.16
+  - 0.0
+  - 1.0 ## surge_left
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - -0.38
+  - 1.0 ## surge_right
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.38
+  - 0.0 ## sway_tail
+  - 1.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - -0.55
+# If true, data will be aligned (use for least squarer method). If false, the data will be trasmited direct after treatment.
+aligned_data: true
+# no documentation available for this property
 # If true, use the velocitu data from pose_estimator. If false use the data from DVL and orientation_estimation
 pose_estimator_data: true
 # sample time of pose_sample
@@ -124,11 +153,6 @@ TCM:
 # If true, data will be aligned (use for least squarer method). If false, the data will be trasmited direct after treatment.
 aligned_data: false
 # no documentation available for this property
-metadata:
-  metadata: []
-  properties: []
-  input_ports: []
-  output_ports: []
 # If true, use the velocity data from pose_estimator. If false use the data from DVL and orientation_estimation
 pose_estimator_data: false
 # sample time of pose_sample
@@ -180,11 +204,6 @@ TCM:
 # If true, data will be aligned (use for least squarer method). If false, the data will be trasmited direct after treatment.
 aligned_data: false
 # no documentation available for this property
-metadata:
-  metadata: []
-  properties: []
-  input_ports: []
-  output_ports: []
 # If true, use the velocity data from pose_estimator. If false use the data from DVL and orientation_estimation
 pose_estimator_data: true
 # sample time of pose_sample

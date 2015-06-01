@@ -43,8 +43,6 @@ bool Dagon::configureHook()
 
 		samplesInputDagon = new SamplesInputDagon(step, X_pos_Cv, X_neg_Cv, Y_pos_Cv, Y_neg_Cv, TCM);
 
-		std::cout << "TCM: "<< std::endl << TCM<< std::endl;
-
 		return true;
     }
 }

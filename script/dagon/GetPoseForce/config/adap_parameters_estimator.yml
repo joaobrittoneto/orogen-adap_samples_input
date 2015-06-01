@@ -1,0 +1,187 @@
+--- name:dagon_surge_aligned
+# If true, use data from "dynamic_samples". If false use raw data from speed_samples and thruster_samples
+aligned_data: true
+# If true, the input forces are the direct forces and torques applied in AUV. If false, the input are the forces applied by the thruster
+body_forces: true
+# Degree of freedom to be analyzed. If UNINITIALISED the method should identify (TODO: check it)
+dofs: :SURGE
+# Frequencie of input thruster. Important for filter the parameters
+ftau: 0.2
+# Gain of model, must be a negative values.
+gA:
+  data: 
+  - -0.1        #surge
+  - -0.0001     #sway
+  - -0.001      #heave
+  - -1          #roll
+  - -1          #pitch
+  - -0.001      #yaw
+# Gain of parameters, must have positive values.
+gLambda:
+  rows: 6
+  cols: 4
+  data: 
+  - 0.0005      # Intertia
+  - 0.0001
+  - 0.0001
+  - 1
+  - 1
+  - 0.02
+  - 0.5         # Quadratic damping
+  - 1
+  - 1
+  - 1
+  - 1
+  - 0.5
+  - 0.5         # Linear damping
+  - 1
+  - 1
+  - 1
+  - 1
+  - 0.5
+  - 0.0005      # Buoyancy
+  - 0
+  - 0
+  - 1
+  - 1
+  - 0.0005
+# no documentation available for this property
+metadata:
+  metadata: []
+  properties: []
+  input_ports: []
+  output_ports: []
+# Sample time. Use for filter purpouse and integrator
+sTime: 0.01
+# Matrix of trhuster. In case the forces and torques are not directly considered
+thrusterMatrix:
+  rows: 6
+  cols: 5
+  data:
+  - 0.0 ## dive_tail
+  - 0.0
+  - -1.0
+  - 0.0
+  - -0.39
+  - 0.0
+  - 0.0 ## dive_head
+  - 0.0
+  - -1.0
+  - 0.0
+  - 0.16
+  - 0.0
+  - 1.0 ## surge_left
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - -0.38
+  - 1.0 ## surge_right
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.38
+  - 0.0 ## sway_tail
+  - 1.0
+  - 0.0
+  - 0.06
+  - 0.0
+  - -0.55 
+  
+  
+--- name:dagon_surge_Notaligned
+# If true, use data from "dynamic_samples". If false use raw data from speed_samples and thruster_samples
+aligned_data: false
+# If true, the input forces are the direct forces and torques applied in AUV. If false, the input are the forces applied by the thruster
+body_forces: true
+# Degree of freedom to be analyzed. If UNINITIALISED the method should identify (TODO: check it)
+dofs: :SURGE
+# Frequencie of input thruster. Important for filter the parameters
+ftau: 0.3
+# Gain of model, must be a negative values.
+gA:
+  data: 
+  - -0.1        #surge
+  - -0.0001     #sway
+  - -0.001      #heave
+  - -1          #roll
+  - -1          #pitch
+  - -0.001      #yaw
+# Gain of parameters, must have positive values.
+gLambda:
+  rows: 6
+  cols: 4
+  data: 
+  - 0.0005      # Intertia
+  - 0.0001
+  - 0.0001
+  - 1
+  - 1
+  - 0.02
+  - 0.5         # Quadratic damping
+  - 1
+  - 1
+  - 1
+  - 1
+  - 0.5
+  - 0.5         # Linear damping
+  - 1
+  - 1
+  - 1
+  - 1
+  - 0.5
+  - 0.0005      # Buoyancy
+  - 0
+  - 0
+  - 1
+  - 1
+  - 0.0005
+# no documentation available for this property
+metadata:
+  metadata: []
+  properties: []
+  input_ports: []
+  output_ports: []
+# Sample time. Use for filter purpouse and integrator
+sTime: 0.07
+# Matrix of trhuster. In case the forces and torques are not directly considered
+thrusterMatrix:
+  rows: 6
+  cols: 5
+  data:
+  - 0.0 ## dive_tail
+  - 0.0
+  - -1.0
+  - 0.0
+  - -0.39
+  - 0.0
+  - 0.0 ## dive_head
+  - 0.0
+  - -1.0
+  - 0.0
+  - 0.16
+  - 0.0
+  - 1.0 ## surge_left
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - -0.38
+  - 1.0 ## surge_right
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.38
+  - 0.0 ## sway_tail
+  - -1.0
+  - 0.0
+  - 0.06
+  - 0.0
+  - 0.55   
+  
+  
+  
+
+  

@@ -1,13 +1,13 @@
 #library for displaying data
 require 'orocos'
 require 'vizkit'
-require './adap_properties3.rb'
+#require './adap_properties.rb'
 require './../gui/gui_parameters.rb'
 
 include Orocos
 
 
-@log_replay = Orocos::Log::Replay.open("../../../../../../Log_files/dagon_logFiles/dagon_model_parameter_estimation_20150303/20150303-1924/linX.log")
+#@log_replay = Orocos::Log::Replay.open("../../../../../../Log_files/dagon_logFiles/dagon_model_parameter_estimation_20150303/20150303-1924/linX.log")
 
 #@log_replay = Orocos::Log::Replay.open("../../../../../../Log_files/dagon_logFiles/dagon_model_parameter_estimation_20150303/20150303-1924/linY.log")
 
@@ -19,6 +19,13 @@ include Orocos
 
 #@log_replay = Orocos::Log::Replay.open("../../../../../../Log_files/dagon_logFiles/dagon_model_parameter_estimation_20150303/20150303-1924/all_in_one.log")
 
+#######################################################################
+@log_replay = Orocos::Log::Replay.open("../../../../../../Log_files/dagon_logFiles/dagon_model_parameter_estimation/20150409-1743/linX.log")
+
+#@log_replay = Orocos::Log::Replay.open("../../../../../../Log_files/dagon_logFiles/dagon_model_parameter_estimation/20150409-1707/linX.log")
+
+#######################################################################
+
 
 Orocos.run 'adap_samples_input::Dagon' => 'adap_samples',
            'ls_pseudoinverse::Task' => 'ls_method' do 
@@ -28,15 +35,19 @@ Orocos.run 'adap_samples_input::Dagon' => 'adap_samples',
     
     adap_samples.apply_conf_file('adap_samples_input::Dagon.yml',['dagon'])
     ls.apply_conf_file('ls_pseudoinverse::Task.yml',['surge'])
+    #ls.apply_conf_file('ls_pseudoinverse::Task.yml',['sway'])
+    #ls.apply_conf_file('ls_pseudoinverse::Task.yml',['heave'])
+    #ls.apply_conf_file('ls_pseudoinverse::Task.yml',['pitch'])
+    #ls.apply_conf_file('ls_pseudoinverse::Task.yml',['yaw'])
+
 
 
      
-    @log_replay.pose_estimator.pose_samples.connect_to adap_samples.position_samples
+    #@log_replay.pose_estimator.pose_samples.connect_to adap_samples.position_samples
+    @log_replay.pose_estimation.pose_samples.connect_to adap_samples.position_samples
     @log_replay.dispatcher.all_joint_state.connect_to adap_samples.forces_samples
     
-    #adap_samples.forces.connect_to ls.forces_samples                                        
-    #adap_samples.velocity.connect_to ls.speed_samples                   
-    #adap_samples.acceleration.connect_to ls.acceleration_samples     
+        
     adap_samples.dynamic.connect_to ls.dynamic_samples,  :type => :buffer, :size => 500    
     
   

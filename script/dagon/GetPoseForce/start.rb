@@ -7,27 +7,41 @@ include Orocos
 #load log file 
 
 
+#@log_replay = Orocos::Log::Replay.open("../../../../../../../Log_files/dagon_logFiles/dagon_model_parameter_estimation_20150303/20150303-1924/linX.log")
 
-@log_replay = Orocos::Log::Replay.open("../../../../../../Log_files/dagon_logFiles/dagon_model_parameter_estimation_20150303/20150303-1924/linX.log")
+#@log_replay = Orocos::Log::Replay.open("../../../../../../../Log_files/dagon_logFiles/dagon_model_parameter_estimation_20150303/20150303-1924/linY.log")
 
-#@log_replay = Orocos::Log::Replay.open("../../../../../../Log_files/dagon_logFiles/dagon_model_parameter_estimation_20150303/20150303-1924/linY.log")
+#@log_replay = Orocos::Log::Replay.open("../../../../../../../Log_files/dagon_logFiles/dagon_model_parameter_estimation_20150303/20150303-1924/linZ.log")
 
-#@log_replay = Orocos::Log::Replay.open("../../../../../../Log_files/dagon_logFiles/dagon_model_parameter_estimation_20150303/20150303-1924/linZ.log")
+#@log_replay = Orocos::Log::Replay.open("../../../../../../../Log_files/dagon_logFiles/dagon_model_parameter_estimation_20150303/20150303-1924/angY.log")
 
-#@log_replay = Orocos::Log::Replay.open("../../../../../../Log_files/dagon_logFiles/dagon_model_parameter_estimation_20150303/20150303-1924/angY.log")
+#@log_replay = Orocos::Log::Replay.open("../../../../../../../Log_files/dagon_logFiles/dagon_model_parameter_estimation_20150303/20150303-1924/angZ.log")
 
-#@log_replay = Orocos::Log::Replay.open("../../../../../../Log_files/dagon_logFiles/dagon_model_parameter_estimation_20150303/20150303-1924/angZ.log")
+#@log_replay = Orocos::Log::Replay.open("../../../../../../../Log_files/dagon_logFiles/dagon_model_parameter_estimation_20150303/20150303-1924/all_in_one.log")
+#######################################################################
+@log_replay = Orocos::Log::Replay.open("../../../../../../../Log_files/dagon_logFiles/dagon_model_parameter_estimation/20150409-1743/linX.log")
 
-#@log_replay = Orocos::Log::Replay.open("../../../../../../Log_files/dagon_logFiles/dagon_model_parameter_estimation_20150303/20150303-1924/all_in_one.log")
+#@log_replay = Orocos::Log::Replay.open("../../../../../../../Log_files/dagon_logFiles/dagon_model_parameter_estimation/20150409-1707/linX.log")
+
+#@log_replay = Orocos::Log::Replay.open("../../../../../../../Log_files/dagon_logFiles/dagon_model_parameter_estimation/20150414-1519/linY.log")
+
+#@log_replay = Orocos::Log::Replay.open("../../../../../../../Log_files/dagon_logFiles/dagon_model_parameter_estimation/20150414-1615/linY.log")
+
+#@log_replay = Orocos::Log::Replay.open("../../../../../../../Log_files/dagon_logFiles/dagon_model_parameter_estimation/20150414-1635/angZ.log")
+
+#@log_replay = Orocos::Log::Replay.open("../../../../../../../Log_files/dagon_logFiles/dagon_model_parameter_estimation/20150414-1703/angZ.log")
+
+#@log_replay = Orocos::Log::Replay.open("../../../../../../../Log_files/dagon_logFiles/dagon_model_parameter_estimation/20150414-1724/angZ.log")
+
+#######################################################################
 
 #   require "readline"
 
-Orocos.run 'adap_samples_input::Dagon' => 'adap_samples' do 
+Orocos.run 'adap_samples_input::GetPoseForce' => 'adap_samples' do 
 
     adap_samples = TaskContext.get 'adap_samples'
         
-    adap_samples.apply_conf_file('adap_samples_input::Dagon.yml',['dagon'])
-    #adap_samples.apply_conf_file('adap_samples_input::Dagon.yml',['dagon_adap_raw_data'])
+    adap_samples.apply_conf_file('config/GetPoseForce.yml',['dagon_ls_method'])
         
     #Readline.readline
     
@@ -38,13 +52,10 @@ Orocos.run 'adap_samples_input::Dagon' => 'adap_samples' do
     widget5 = Vizkit.default_loader.Plot2d
     widget6 = Vizkit.default_loader.Plot2d
 
-      
-      
-    @log_replay.dvl.velocity_samples.connect_to adap_samples.dvl_samples
-    @log_replay.orientation_estimator.attitude_b_g.connect_to adap_samples.orientation_samples
-    
-    @log_replay.pose_estimator.pose_samples.connect_to adap_samples.position_samples
-    @log_replay.dispatcher.all_joint_state.connect_to adap_samples.forces_samples
+        
+    #@log_replay.pose_estimator.pose_samples.connect_to  adap_samples.pose_samples  
+    @log_replay.pose_estimation.pose_samples.connect_to  adap_samples.pose_samples
+    @log_replay.dispatcher.all_joint_state.connect_to   adap_samples.thruster_samples
     
     
  

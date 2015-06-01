@@ -1,0 +1,48 @@
+--- name:default
+# ******************************
+# ******** Frame Names *********
+# ******************************
+# the global name that should be used for the internal body frame
+#body_frame: body
+# the global name that should be used for the internal world frame
+#world_frame: map_halle
+
+# ******************************
+# *** Transformer Properties ***
+# ******************************
+# Time in s between forces_samples readings
+forces_samples_period: 0.01
+# Time in s between pose_samples readings
+pose_samples_period: 0.01
+# Maximum time in seconds the transformer will wait until it starts dropping samples
+transformer_max_latency: 0.1
+# Minimum system time in seconds between two updates of the status ports
+transformer_status_period: 1.0
+
+# ******************************
+# ***  Savitzky–Golay   ***
+# *** Filter Properties ***
+# ******************************
+# degree of polynomial for filter, to get acceleration
+poly: 3.0
+# Half minus one amount of data used to compute the acceleration
+halfSize: 50
+# Position of the computed acceleration. from -halfSize to +halfSize
+posFilter: 0.0
+# sample time of pose_sample
+step: 0.01
+# If true, data will be aligned and transmitted (use for adaptive method). If false, acceleration will be computed, with delay (use for least square method).
+
+
+
+
+
+
+--- name:dagon_adap_method
+# If true, data will be aligned and transmitted (use for adaptive method). If false, acceleration will be computed, with delay (use for least square method).
+adap_method: true
+
+
+--- name:dagon_ls_method
+# If true, data will be aligned and transmitted (use for adaptive method). If false, acceleration will be computed, with delay (use for least square method).
+adap_method: false
