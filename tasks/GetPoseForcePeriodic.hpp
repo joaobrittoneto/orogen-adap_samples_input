@@ -27,13 +27,27 @@ namespace adap_samples_input {
 	friend class GetPoseForcePeriodicBase;
     protected:
 
-	 virtual void pose_samplesTransformerCallback(const base::Time &ts, const ::base::samples::RigidBodyState &pose_samples_sample);
-
-	 virtual void forces_samplesTransformerCallback(const base::Time &ts, const ::base::samples::Joints &forces_samples_sample);
-
 	 adap_samples_input::DataModel *dataModel;
 
+	// Aux variables
+	base::samples::RigidBodyState	lastPoseSample;
+	base::samples::Joints			lastForceSample;
+	double sampleTime;
+
+	base::Time actualStep;
+
 	 bool adap_method;
+
+	 virtual void pose_samplesCallback(const base::Time &ts, const ::base::samples::RigidBodyState &pose_samples_sample);
+
+	 virtual void forces_samplesCallback(const base::Time &ts, const ::base::samples::Joints &forces_samples_sample);
+
+     bool handleMeasurement(base::samples::RigidBodyState &rbs_sample, double &step);
+     bool handleMeasurement(const base::samples::Joints &force_sample, double &step);
+
+     base::samples::RigidBodyState getPeriodicPose(const base::samples::RigidBodyState &old_sample, const base::samples::RigidBodyState &new_sample);
+
+
 
 
     public:

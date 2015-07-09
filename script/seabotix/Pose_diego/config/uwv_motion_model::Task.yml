@@ -1,0 +1,784 @@
+--- name:seabotix
+# Defines if the control signal is PWM, RPM or EFFORT.
+control_mode: :EFFORT
+# no documentation available for this property
+metadata:
+  metadata: []
+  properties: []
+  input_ports: []
+  output_ports: []
+# Parameters of the motion model.
+model_parameters:
+  ctrl_order: 6
+  samplingtime: 0.1
+  sim_per_cycle: 10
+  massMatrix:
+    data:
+    - 12.8     # surge
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 10000.0     # sway
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 10000.0     # heave
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 10000.0       # roll
+    - 0.0
+    - 0.0       
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 0.0
+    - 10000.0       # pitch
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 2.3 # 0.79 # 0.86       # yaw
+  coriolisMatrix:
+    data:
+    - 0.0     # surge
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 0.0     # sway
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 0.0     # heave
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 0.0       # roll
+    - 0.0
+    - 0.0       
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       # pitch
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       # yaw
+  linDampMatrix:        
+    data:
+    - 4.05     # surge
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 1000.0     # sway
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 1000.0     # heave
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 1000.0       # roll
+    - 0.0
+    - 0.0       
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1000.0       # pitch
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       # yaw
+  quadDampMatrix:
+    data:
+    - 0.405     # surge
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 1000.0     # sway
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 1000.0     # heave
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 1000.0       # roll
+    - 0.0
+    - 0.0       
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1000.0       # pitch
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0 #1.27 #0.65       # yaw
+  thruster_control_matrix:
+    rows: 6
+    cols: 6
+    data:
+    - 1.0    # surge
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0    # sway
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0    # heave
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0   
+    - 0.0    # roll
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0    # pitch
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0   
+    - 0.0    # yaw
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0    
+  distance_body2centerofbuoyancy:
+    data:
+    - 0.0
+    - 0.0
+    - 0.0
+  distance_body2centerofgravity:
+    data:
+    - 0.0
+    - 0.0
+    - 0.0
+  uwv_mass: 0.0
+  uwv_volume: 0.0
+  uwv_float: false
+  waterDensity: 998.2
+  gravity: 9.81
+  thrusterVoltage: [0.0]
+  thruster_coefficients_pwm:
+  - positive: 0.0
+    negative: 0.0
+  linear_thruster_coefficients_pwm:
+  - positive: 0.0
+    negative: 0.0
+  square_thruster_coefficients_pwm:
+  - positive: 0.0
+    negative: 0.0
+  thruster_coefficient_rpm:
+  - positive: 0.0
+    negative: 0.0
+  initial_condition:
+  - 0.0 # position
+  - 0.0
+  - -3.0
+  - 0.0 # euler orientation
+  - 0.0
+  - 0.0
+  - 0.0 # linear velocity
+  - 0.0
+  - 0.0
+  - 0.0 # angular velocity
+  - 0.0
+  - 0.0
+# Name of the source frame.
+source_frame: ''
+# Name of the target frame.
+target_frame: ''
+# Velocity uncertainty values. This values are integrated in order to obtain the pose uncertainty
+velocity_uncertainty:
+  data:
+  - 2.0e-323
+  - 0.1
+  - 5.0e-323
+  - 0.0
+  - 0.0
+  - 0.0
+  
+  
+--- name:seabotix_ls
+# Defines if the control signal is PWM, RPM or EFFORT.
+control_mode: :EFFORT
+# no documentation available for this property
+metadata:
+  metadata: []
+  properties: []
+  input_ports: []
+  output_ports: []
+# Parameters of the motion model.
+model_parameters:
+  ctrl_order: 6
+  samplingtime: 0.1
+  sim_per_cycle: 10
+  massMatrix:
+    data:
+    - 12.78     # surge
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 10000.0     # sway
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 10000.0     # heave
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 10000.0       # roll
+    - 0.0
+    - 0.0       
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 0.0
+    - 10000.0       # pitch
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.489       # yaw
+  coriolisMatrix:
+    data:
+    - 0.0     # surge
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 0.0     # sway
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 0.0     # heave
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 0.0       # roll
+    - 0.0
+    - 0.0       
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       # pitch
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       # yaw
+  linDampMatrix:        
+    data:
+    - 3.6     # surge
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 1000.0     # sway
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 1000.0     # heave
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 1000.0       # roll
+    - 0.0
+    - 0.0       
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1000.0       # pitch
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       # yaw
+  quadDampMatrix:
+    data:
+    - 0.24     # surge
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 1000.0     # sway
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 1000.0     # heave
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 1000.0       # roll
+    - 0.0
+    - 0.0       
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1000.0       # pitch
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.418       # yaw
+  thruster_control_matrix:
+    rows: 6
+    cols: 6
+    data:
+    - 1.0    # surge
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0    # sway
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0    # heave
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0   
+    - 0.0    # roll
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0    # pitch
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0   
+    - 0.0    # yaw
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0    
+  distance_body2centerofbuoyancy:
+    data:
+    - 0.0
+    - 0.0
+    - 0.0
+  distance_body2centerofgravity:
+    data:
+    - 0.0
+    - 0.0
+    - 0.0
+  uwv_mass: 0.0
+  uwv_volume: 0.0
+  uwv_float: false
+  waterDensity: 998.2
+  gravity: 9.81
+  thrusterVoltage: [0.0]
+  thruster_coefficients_pwm:
+  - positive: 0.0
+    negative: 0.0
+  linear_thruster_coefficients_pwm:
+  - positive: 0.0
+    negative: 0.0
+  square_thruster_coefficients_pwm:
+  - positive: 0.0
+    negative: 0.0
+  thruster_coefficient_rpm:
+  - positive: 0.0
+    negative: 0.0
+  initial_condition:
+  - 0.0 # position
+  - 0.0
+  - -3.0
+  - 0.0 # euler orientation
+  - 0.0
+  - 0.0
+  - 0.0 # linear velocity
+  - 0.0
+  - 0.0
+  - 0.0 # angular velocity
+  - 0.0
+  - 0.0
+# Name of the source frame.
+source_frame: ''
+# Name of the target frame.
+target_frame: ''
+# Velocity uncertainty values. This values are integrated in order to obtain the pose uncertainty
+velocity_uncertainty:
+  data:
+  - 2.0e-323
+  - 0.1
+  - 5.0e-323
+  - 0.0
+  - 0.0
+  - 0.0
+  
+--- name:seabotix_adap
+# Defines if the control signal is PWM, RPM or EFFORT.
+control_mode: :EFFORT
+# no documentation available for this property
+metadata:
+  metadata: []
+  properties: []
+  input_ports: []
+  output_ports: []
+# Parameters of the motion model.
+model_parameters:
+  ctrl_order: 6
+  samplingtime: 0.1
+  sim_per_cycle: 10
+  massMatrix:
+    data:
+    - 12.8     # surge
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 10000.0     # sway
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 10000.0     # heave
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 10000.0       # roll
+    - 0.0
+    - 0.0       
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 0.0
+    - 10000.0       # pitch
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.86       # yaw
+  coriolisMatrix:
+    data:
+    - 0.0     # surge
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 0.0     # sway
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 0.0     # heave
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 0.0       # roll
+    - 0.0
+    - 0.0       
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       # pitch
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       # yaw
+  linDampMatrix:        
+    data:
+    - 3.7     # surge
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 1000.0     # sway
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 1000.0     # heave
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 1000.0       # roll
+    - 0.0
+    - 0.0       
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1000.0       # pitch
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       # yaw
+  quadDampMatrix:
+    data:
+    - 0.405     # surge
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 1000.0     # sway
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 1000.0     # heave
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 1000.0       # roll
+    - 0.0
+    - 0.0       
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1000.0       # pitch
+    - 0.0
+    - 0.0       #### 
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.65       # yaw
+  thruster_control_matrix:
+    rows: 6
+    cols: 6
+    data:
+    - 1.0    # surge
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0    # sway
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0    # heave
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0   
+    - 0.0    # roll
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0    # pitch
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0   
+    - 0.0    # yaw
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0    
+  distance_body2centerofbuoyancy:
+    data:
+    - 0.0
+    - 0.0
+    - 0.0
+  distance_body2centerofgravity:
+    data:
+    - 0.0
+    - 0.0
+    - 0.0
+  uwv_mass: 0.0
+  uwv_volume: 0.0
+  uwv_float: false
+  waterDensity: 998.2
+  gravity: 9.81
+  thrusterVoltage: [0.0]
+  thruster_coefficients_pwm:
+  - positive: 0.0
+    negative: 0.0
+  linear_thruster_coefficients_pwm:
+  - positive: 0.0
+    negative: 0.0
+  square_thruster_coefficients_pwm:
+  - positive: 0.0
+    negative: 0.0
+  thruster_coefficient_rpm:
+  - positive: 0.0
+    negative: 0.0
+  initial_condition:
+  - 0.0 # position
+  - 0.0
+  - -3.0
+  - 0.0 # euler orientation
+  - 0.0
+  - 0.0
+  - 0.0 # linear velocity
+  - 0.0
+  - 0.0
+  - 0.0 # angular velocity
+  - 0.0
+  - 0.0
+# Name of the source frame.
+source_frame: ''
+# Name of the target frame.
+target_frame: ''
+# Velocity uncertainty values. This values are integrated in order to obtain the pose uncertainty
+velocity_uncertainty:
+  data:
+  - 2.0e-323
+  - 0.1
+  - 5.0e-323
+  - 0.0
+  - 0.0
+  - 0.0  
+

@@ -5,6 +5,7 @@
 
 #include "adap_samples_input/SeabotixBase.hpp"
 #include "adap_samples_input/SamplesInput.hpp"
+#include "adap_samples_input/InputAdap.hpp"
 #include "base/samples/RigidBodyState.hpp"
 #include "base/samples/RigidBodyAcceleration.hpp"
 #include "base/samples/Joints.hpp"
@@ -31,7 +32,7 @@ namespace adap_samples_input {
 	friend class SeabotixBase;
     protected:
 
-		adap_samples_input::SamplesInput *samplesInput;
+		adap_samples_input::InputAdap *inputAdap;
 
     public:
         /** TaskContext constructor for Seabotix

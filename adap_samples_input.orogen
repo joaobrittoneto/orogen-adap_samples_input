@@ -5,6 +5,8 @@ name "adap_samples_input"
 
 using_library "adap_samples_input"
 
+using_task_library 'uwv_motion_model'
+
 import_types_from "base"
 import_types_from "adap_samples_input/samples_dataType.h"
 
@@ -39,12 +41,21 @@ end
 
 
 task_context "Seabotix" do    
-
-     input_port('position_samples', '/base/samples/RigidBodyState').
-        doc("current position given by detector.pose //camera ")
+    
+    # sample time of pose_sample      
+    property "step", "double", 0.01  
+     
+    # delay of the thruster data      
+    property "delay", "double", 1.0 
+    
+    # half number of samples used to compute derivatives        
+    property "number_samples", "double", 10.0 
+    
+    input_port('position_samples', '/base/samples/RigidBodyState').
+       doc("current position given by detector.pose //camera ")
         
-     input_port('forces_samples', '/base/samples/Joints').
-        doc("input pwm signal applied in the thrusters")    
+    input_port('forces_samples', '/base/samples/Joints').
+       doc("input pwm signal applied in the thrusters")    
 
     
     output_port('velocity', '/base/samples/RigidBodyState').
@@ -195,9 +206,9 @@ task_context "GetPoseForcePeriodic" do
   
    
      # If true, data will be aligned and transmitted (use for adaptive method). If false, acceleration will be computed, with delay (use for least square method).      
-     property "adap_method", "bool", true  
-     # sample time of pose_sample      
-     property "step", "double", 0.01   
+#     property "adap_method", "bool", true  
+     # sample time       
+     property "step", "double", 0.1   
      # degree of polynomial for filter, to get acceleration      
      property "poly", "double", 3
      # Half minus one amount of data used to compute the acceleration      
@@ -216,8 +227,11 @@ task_context "GetPoseForcePeriodic" do
         
 
      ## Outputs of velocities, acceleration, forces and torques   
-     #output_port('velocity', '/base/samples/RigidBodyState').
-      #  doc("velocity after filter. Used for alligned porpose with acceleration")
+     output_port('velocity', '/base/samples/RigidBodyState').
+        doc("velocity after filter. Used for alligned porpose with acceleration")
+     
+     output_port('effort', '/base/samples/Joints').
+        doc("Forces and torques applied in the vehicle")
         
      #output_port('lin_acceleration', '/base/samples/RigidBodyAcceleration').
       #  doc("linear accelaration after derivated the velocity_samples")
@@ -231,9 +245,8 @@ task_context "GetPoseForcePeriodic" do
      #******************************
      #** Aggregator Parameters ***** 
      #******************************
-     transformer do
-        #transformation("body", "world")
-        
+     stream_aligner do
+                
         align_port("pose_samples", 0.01)
         align_port("forces_samples", 0.01)
         max_latency(0.1)
@@ -243,6 +256,20 @@ task_context "GetPoseForcePeriodic" do
     
 end
 
+deployment "motion_model1" do
+  task 'motion_model1', 'uwv_motion_model::Task'
+  add_default_logger
+end
+
+deployment "motion_model2" do
+  task 'motion_model2', 'uwv_motion_model::Task'
+  add_default_logger
+end
+
+#deployment "motion_model2" do
+#  task 'motion_model2', 'uwv_motion_model::Task'
+#  add_default_logger
+#end
 
 
 

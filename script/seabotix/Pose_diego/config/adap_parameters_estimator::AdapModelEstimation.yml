@@ -1,0 +1,64 @@
+--- name:default
+# Degree of freedom to be analyzed. If UNINITIALISED the method should identify (TODO: check it)
+#dofs: :SURGE
+# Frequencie of input thruster. Important for filter the parameters
+ftau: 0.2
+# Gain of model, must be a negative values.
+gA:
+  data: 
+  - -0.005        #surge
+  - -0.0001     #sway
+  - -0.001      #heave
+  - -1          #roll
+  - -1          #pitch
+  - -0.001      #yaw
+# Gain of parameters, must have positive values.
+gLambda:
+  rows: 6
+  cols: 4
+  data: 
+  - 0.5      # Intertia
+  - 0.0001
+  - 0.0001
+  - 1
+  - 1
+  - 0.02
+  - 0.5         # Quadratic damping
+  - 1
+  - 1
+  - 1
+  - 1
+  - 0.5
+  - 0.5         # Linear damping
+  - 1
+  - 1
+  - 1
+  - 1
+  - 0.5
+  - 0.05      # Buoyancy
+  - 0
+  - 0
+  - 1
+  - 1
+  - 0.0005
+# no documentation available for this property
+metadata:
+  metadata: []
+  properties: []
+  input_ports: []
+  output_ports: []
+# Sample time. Use for filter purpouse and integrator
+sTime: 2.0
+
+--- name:surge 
+dofs: :SURGE 
+  
+--- name:sway 
+dofs: :SWAY 
+
+--- name:heave 
+dofs: :HEAVE 
+
+--- name:yaw 
+dofs: :YAW 
+  

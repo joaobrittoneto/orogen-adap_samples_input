@@ -30,7 +30,8 @@ bool Seabotix::configureHook()
         return false;
     else
        {
-       	samplesInput = new SamplesInput();
+    	double step = _step.get();
+    	inputAdap = new InputAdap(step);
 
           	return true;
        }
@@ -49,7 +50,8 @@ void Seabotix::updateHook()
     base::samples::Joints 								forces_sample;
 
     static base::samples::RigidBodyState 				actual_RBS;
-    static base::samples::RigidBodyAcceleration 		actual_RBA;
+    static base::samples::RigidBodyAcceleration 		actual_LinRBA;
+    static base::samples::RigidBodyAcceleration 		actual_AngRBA;
 
     static base::samples::Joints 						forces_output;
 
@@ -71,7 +73,8 @@ void Seabotix::updateHook()
     {
     	actual_RBS.position = Eigen::VectorXd::Zero(3);
     	actual_RBS.velocity = Eigen::VectorXd::Zero(3);
-    	actual_RBA.acceleration = Eigen::VectorXd::Zero(3);
+    	actual_LinRBA.acceleration = Eigen::VectorXd::Zero(3);
+    	actual_AngRBA.acceleration = Eigen::VectorXd::Zero(3);
     	forces_output.elements.resize(6);
     	for(int i=0; i<6; i++)
     	{
@@ -93,34 +96,51 @@ void Seabotix::updateHook()
     }
 
     // size of the queue 2*m+1. Important for the filter in the position and in compensating the delay
-    const double m = 157; // 315 ≃ number of samples in a period of 0.2 rad/s w/ sample time of 0.05s (pi/0.2/0.05)
-    const double size = 2*m+1;
+   // const double m = _number_samples.get(); // 315 ≃ number of samples in a period of 0.2 rad/s w/ sample time of 0.05s (pi/0.2/0.05)
+    const double size = 2*_number_samples.get()+1;
     static bool doIt = false;
 
-    if (_forces_samples.read(forces_sample) == RTT::NewData)
+    while (_forces_samples.read(forces_sample) == RTT::NewData)
     {
-    	samplesInput->Update_Force_Seabotix(forces_sample, queueOfForces, size, forces_output);
+    	bool check = true;
+    	for(int i=0; i<6; i++)
+    	{
+    		if(isnan(forces_sample.elements[i].effort))
+    			check = false;
+    	}
+    	if(check)
+    	{
+    		forces_sample.time = forces_sample.time + base::Time::fromSeconds(_delay.get()); // Add delay of seabotix
+    		inputAdap->Queue(2*size, forces_sample, queueOfForces);
+    	}
     }
 
 
-    if (_position_samples.read(position_sample) == RTT::NewData)
+    while (_position_samples.read(position_sample) == RTT::NewData)
     {
-    	doIt = samplesInput->Update_Velocity_Seabotix(position_sample, queueOfRBS, size, actual_RBS, actual_RBA);
+    	bool check = true;
+    	for(int i =0; i<3; i++)
+    	{
+    		if(isnan(position_sample.position[i]) || isnan(base::getEuler(position_sample.orientation)[i]))
+    			check = false;
+    	}
+    	if(check)
+    		doIt = inputAdap->calcVelAcc(position_sample, queueOfRBS, size, actual_RBS, actual_LinRBA, actual_AngRBA);
     }
 
 
     if(fmod(queueOfRBS.size(),2) == 1 && queueOfRBS.size() == size && queueOfForces.size() > 1 && doIt)
     {
-    	bool aligned = samplesInput->Delay_Compensate(actual_RBS, queueOfForces, forces_output);
+    	bool aligned = inputAdap->Delay_Compensate(actual_RBS, queueOfForces, forces_output);
 
     	doIt = false;
 
     	if(aligned)
     	{
-    		samplesInput->Agglomerate(forces_output,actual_RBS, actual_RBA, dynamic);
+    		inputAdap->Agglomerate(forces_output,actual_RBS, actual_LinRBA, actual_AngRBA, dynamic);
     		_dynamic.write(dynamic);
     		_velocity.write(actual_RBS);
-    		_acceleration.write(actual_RBA);
+    		_acceleration.write(actual_LinRBA);
     		_forces.write(forces_output);
 
 
