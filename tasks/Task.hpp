@@ -17,7 +17,7 @@
 
 
 #include "adap_samples_input/TaskBase.hpp"
-#include "adap_samples_input/SamplesInput.hpp"
+#include "adap_samples_input/InputAdap.hpp"
 #include "base/samples/RigidBodyState.hpp"
 #include "base/samples/RigidBodyAcceleration.hpp"
 #include "base/samples/LaserScan.hpp"
@@ -45,7 +45,29 @@ namespace adap_samples_input {
 	friend class TaskBase;
     protected:
 
-		adap_samples_input::SamplesInput *samplesInput;
+    virtual void forces_samplesCallback(const base::Time &ts, const ::base::samples::Joints &forces_samples_sample);
+    virtual void pose_samplesCallback(const base::Time &ts, const ::base::samples::RigidBodyState &pose_samples_sample);
+    bool handleMeasurement(const base::samples::RigidBodyState &rbs_sample, double &step);
+    bool handleMeasurement(const base::samples::Joints &force_sample);
+    void updateStep(double estimatedstep);
+    void computeMeanStep(std::queue<double>	&queueOfStep, double step);
+
+	adap_samples_input::InputAdap *inputAdap;
+
+	double gsize;
+	double meanStep;
+	double gpos_filter;
+	double gpoly;
+	bool first_time;
+	bool new_sample;
+
+
+	base::samples::RigidBodyState	lastPoseSample;
+
+    std::queue<base::samples::RigidBodyState>	queueOfRBS;
+    std::queue<base::samples::Joints> 			queueOfForces;
+    std::queue<double>	queueOfStep;
+
 
     public:
         /** TaskContext constructor for Task

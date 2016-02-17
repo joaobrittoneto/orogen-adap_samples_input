@@ -6,6 +6,7 @@ name "adap_samples_input"
 using_library "adap_samples_input"
 
 using_task_library 'uwv_motion_model'
+using_task_library 'ls_pseudoinverse'
 
 import_types_from "base"
 import_types_from "adap_samples_input/samples_dataType.h"
@@ -14,27 +15,51 @@ import_types_from "adap_samples_input/samples_dataType.h"
 task_context "Task" do
     
 
-     input_port('position_samples', '/base/samples/LaserScan').
-        doc("current position given by sonar_feature_estimator")
-        
-     input_port('forces_samples', '/base/samples/Joints').
-        doc("input pwm signal applied in the thrusters")    
+  # sample time of pose_sample      
+  property "step", "double", 0.01  
+  # delay of the thruster data and pose_samples       
+  property "delay", "double", 0.0 
+  # Savitzky-Golay filter.
+  property "filter_sav_gol", "bool", true
+  # Velocity avalaible, compute acceleration. If false, pose avalaible, compute velocity and acceleration
+  property "velocity_avalible", "bool", true
+  # Smooth given data (position or velocity). 
+  property "smooth", "bool", false 
+  # degree of polynomial for filter, to get acceleration      
+  property "poly", "double", 3
+  # Position of the computed derivatives. from -halfSize to +halfSize      
+  property "pos_filter", "double", 0 
+  # half number of samples used to compute derivatives        
+  property "number_samples", "double", 10.0 
+  
+  input_port('pose_samples', '/base/samples/RigidBodyState').
+     doc("current pose, can not have velocities data ")
+      
+  input_port('forces_samples', '/base/samples/Joints').
+     doc("forces applied in auv")    
+
+  
+  output_port('velocities', '/base/samples/RigidBodyState').
+      doc("Velocities in auv, in body-frame")
+      
+  output_port('forces', '/base/samples/Joints').
+      doc("forces applied in the auv")    
+      
+  output_port('dynamic', 'adap_samples_input::DynamicAUV').
+      doc("agglomerate forces, velocities and accelerations data in body-frame")          
 
     
-    output_port('velocity', '/base/samples/RigidBodyState').
-        doc("velocity after filter and derivated the position_samples")
-        
-    output_port('acceleration', '/base/samples/RigidBodyAcceleration').
-        doc("accelaration after filter and 2th derivated the position_samples")
-        
-    output_port('forces', '/base/samples/Joints').
-        doc("forces applied in the auv. Convert the pwm input into force and applied the thruster matrix")    
-        
-    output_port('dynamic', 'adap_samples_input::DynamicAUV').
-        doc("agglomerate all data of the other ports (force, rbs and rba) ")          
-
-    
-    port_driven 
+  #******************************
+  #** Aggregator Parameters ***** 
+  #******************************
+  stream_aligner do
+             
+     align_port("pose_samples", 0.001)
+     align_port("forces_samples", 0.001)
+     max_latency(0.1)
+  end   
+ 
+  periodic 0.01 
     
 end
 
@@ -263,6 +288,18 @@ end
 
 deployment "motion_model2" do
   task 'motion_model2', 'uwv_motion_model::Task'
+  add_default_logger
+end
+
+deployment "adap_samples_pose" do
+  task 'adap_samples_pose', 'adap_samples_input::Task'
+  task 'ls_method_pose', 'ls_pseudoinverse::Task'
+  add_default_logger
+end
+
+deployment "adap_samples_vel" do
+  task 'adap_samples_vel', 'adap_samples_input::Task'
+  task 'ls_method_vel', 'ls_pseudoinverse::Task'  
   add_default_logger
 end
 
